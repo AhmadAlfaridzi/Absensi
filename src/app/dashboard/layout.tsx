@@ -111,7 +111,7 @@ export default function DashboardLayout({
           name: 'Absen', 
           icon: <LogIn className="h-4 w-4 text-green-400" />,
           href: '/dashboard/presensi/absen', 
-          allowedRoles: ['Direktur', 'Manajer', 'karyawan', 'Teknisi']
+          allowedRoles: ['Direktur', 'Manajer', 'karyawan', 'Teknisi','admin']
         },
         { 
           name: 'History', 
