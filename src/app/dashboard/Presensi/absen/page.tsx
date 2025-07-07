@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react' 
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
-import AttendanceCard from '@/components/presensi/attendenceCard'
-import AttendanceModal from '@/components/presensi/AttendanceModal'
-import UserInfo from '@/components/presensi/userInfo'
+import AttendanceCard from '@/components/Presensi/attendenceCard'
+import AttendanceModal from '@/components/Presensi/AttendanceModal'
+import UserInfo from '@/components/Presensi/userInfo'
 
 export default function AbsenPage() {
   const { user } = useAuth()
