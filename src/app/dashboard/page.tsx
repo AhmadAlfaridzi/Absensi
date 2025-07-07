@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/context/authcontext'
+import { useAuth } from '@/context/authContext'
 import { redirect } from 'next/navigation'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
