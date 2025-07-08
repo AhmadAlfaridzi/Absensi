@@ -22,4 +22,7 @@ export interface SparePart {
   lokasi: string
   supplier?: string
   foto?: string
+  status: 'Tersedia' | 'Habis' | 'Dipesan'
 }
+
+export type SparePartStatusFilter = 'all' | 'Tersedia' | 'Habis' | 'Dipesan'
