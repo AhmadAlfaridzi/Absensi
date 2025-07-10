@@ -15,3 +15,6 @@ export interface AttendanceRecord {
   photoIn: string | null
   photoOut: string | null
 }
+
+
+

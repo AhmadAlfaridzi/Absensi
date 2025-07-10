@@ -1,4 +1,10 @@
 export type StatusFilter = 'all' | 'Aktif' | 'Tidak Aktif' | 'Dalam Kalibrasi' | 'Rusak'
+export type SparePartStatusFilter = 'all' | 'Tersedia' | 'Habis' | 'Dipesan'
+
+export interface DateRange {
+  from?: Date
+  to?: Date
+} 
 
 export interface AlatKalibrasi {
   id: string
@@ -22,4 +28,6 @@ export interface SparePart {
   lokasi: string
   supplier?: string
   foto?: string
+  status: 'Tersedia' | 'Habis' | 'Dipesan'
 }
+
