@@ -93,7 +93,7 @@ export default function HistoryPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 p-6 bg-[#1a1a1a]  text-white"
+      className="space-y-6 p-6 bg-[#1a1a1a] min-h-screen text-white"
     >
       {isMobile && (
         <Button 
