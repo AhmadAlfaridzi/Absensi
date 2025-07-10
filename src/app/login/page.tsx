@@ -52,7 +52,12 @@ export default function LoginPage() {
     try {
       await login(username, password)
       toast.success('Login berhasil!')
-      router.push('/dashboard')
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+        if (user?.role === 'Teknisi') {
+          router.push('/dashboard/presensi/absen')
+        } else {
+          router.push('/dashboard')
+        }
     } catch (error) {
       let errorMessage = 'Terjadi kesalahan saat login'
       if (error instanceof Error) {

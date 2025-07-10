@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
-import { dummyPegawai } from '@/data/pegawai'
+import { dummyPegawai } from '@/data/users'
 
 export default function DetailPegawai({ params }: { params: { id: string } }) {
   const data = dummyPegawai.find(item => item.id === params.id)
