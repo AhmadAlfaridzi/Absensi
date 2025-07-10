@@ -21,7 +21,6 @@ import {
   Box,
   Settings,
   LogOut,
-  Briefcase,
   Wrench,
   Package,
   LogIn
@@ -111,13 +110,13 @@ export default function DashboardLayout({
           name: 'Absen', 
           icon: <LogIn className="h-4 w-4 text-green-400" />,
           href: '/dashboard/presensi/absen', 
-          allowedRoles: ['Direktur', 'Manajer', 'karyawan', 'Teknisi']
+          allowedRoles: ['Direktur', 'Manajer', 'karyawan', 'Teknisi','admin']
         },
         { 
           name: 'History', 
           icon: <History className="h-4 w-4 text-green-400" />,
           href: '/dashboard/presensi/history',
-          allowedRoles: ['admin', 'Owner', 'Direktur', 'Manajer','Teknisi']
+          allowedRoles: ['admin', 'Owner', 'Direktur', 'Manajer','Teknisi','karyawan']
         }
       ],
       allowedRoles: ['admin', 'Direktur', 'Manajer', 'karyawan', 'Teknisi']
@@ -140,20 +139,7 @@ export default function DashboardLayout({
       name: 'Pegawai',
       icon: <Users className="h-5 w-5 text-yellow-400" />,
       href: '/dashboard/pegawai',
-      items: [
-        { 
-          name: 'Data', 
-          icon: <Users className="h-4 w-4 text-yellow-400" />,
-          href: '/dashboard/pegawai/data',
-          allowedRoles: ['admin', 'Manajer']
-        },
-        { 
-          name: 'Jabatan', 
-          icon: <Briefcase className="h-4 w-4 text-yellow-400" />,
-          href: '/dashboard/pegawai/jabatan', 
-          allowedRoles: ['admin']
-        }
-      ],
+      items: [],
       allowedRoles: ['admin', 'Manajer']
     },
     {
@@ -170,7 +156,7 @@ export default function DashboardLayout({
         { 
           name: 'Sparepart', 
           icon: <Package className="h-4 w-4 text-teal-400" />,
-          href: '/dashboard/inventory/sparepart', 
+          href: '/dashboard/inventory/spare-part', 
           allowedRoles: ['admin', 'Teknisi']
         }
       ],
