@@ -1,4 +1,3 @@
-// src/data/pegawai.ts
 import { UserProfile, UserAccount, User } from '@/types/user'
 
 export const dummyPegawai: UserProfile[] = [
