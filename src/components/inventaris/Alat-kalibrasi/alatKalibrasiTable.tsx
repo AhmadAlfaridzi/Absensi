@@ -1,9 +1,10 @@
 'use client'
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+
+import { ColumnDef } from "@tanstack/react-table"
 import { AlatKalibrasi } from "@/types/inventory"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { GenericTable } from "@/components/Common/genericTable"
 
 export const columns: ColumnDef<AlatKalibrasi>[] = [
   {
@@ -55,50 +56,13 @@ export const columns: ColumnDef<AlatKalibrasi>[] = [
 ]
 
 export function AlatKalibrasiTable({ data }: { data: AlatKalibrasi[] }) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  })
-
   return (
-    <div className="rounded-md border border-[#2e2e2e]">
-      <Table>
-        <TableHeader className="bg-[#1e1e1e]">
-          {table.getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <TableHead key={header.id} className="text-blue-300">
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map(row => (
-              <TableRow 
-                key={row.id} 
-                className="border-[#2e2e2e] hover:bg-[#2e2e2e]"
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center text-gray-400">
-                Tidak ada data
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+    <GenericTable
+      columns={columns}
+      data={data}
+      showPagination={true}
+      pageSize={8}
+      noDataMessage="Tidak ada data alat kalibrasi"
+    />
   )
 }
