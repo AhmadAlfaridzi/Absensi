@@ -179,3 +179,16 @@ export default function RiwayatAbsenPage() {
     </motion.div>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
