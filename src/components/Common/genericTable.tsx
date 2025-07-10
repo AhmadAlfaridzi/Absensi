@@ -24,6 +24,8 @@ interface DataTableProps<TData> {
   noDataMessage?: string
   showPagination?: boolean
   pageSize?: number
+  customHeaderClass?: string;
+  customRowClass?: string;
 }
 
 export function GenericTable<TData>({
