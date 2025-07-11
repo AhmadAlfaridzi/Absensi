@@ -27,6 +27,8 @@ import {
 } from 'lucide-react'
 import { SmoothTransition } from '@/components/ui/smooth-transition'
 import { User, UserRole } from '@/types/user'
+import { Copyright } from '@/components/copyRight';
+
 
 function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(false)
@@ -432,7 +434,9 @@ const activeMenu = useMemo(() => {
           <SmoothTransition>
             {children}
           </SmoothTransition>
+          <Copyright />
         </div>
+       
       </main>
     </div>
   )
