@@ -63,7 +63,7 @@ export default function HistoryPage() {
 
   const handleBackClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    router.push('/dashboard')
+    router.push('/dashboard/presensi/absen')
   }
 
   const [currentDate] = useState(new Date().toLocaleDateString('id-ID', {
@@ -93,7 +93,7 @@ export default function HistoryPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 p-6 bg-[#1a1a1a]  text-white"
+      className="space-y-6 p-6 bg-[#1a1a1a] min-h-screen text-white"
     >
       {isMobile && (
         <Button 
@@ -102,7 +102,7 @@ export default function HistoryPage() {
           className="text-blue-400 hover:text-blue-300 mb-6 bg-[#2a2a2a] hover:bg-[#333333] md:hidden"
         >
           <ArrowLeft className="h-5 w-5 mr-2" />
-          Kembali ke Dashboard
+          Kembali ke halaman absensi
         </Button>
       )}
 
