@@ -4,7 +4,7 @@ import { useAuth } from '@/context/authContext'
 // import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import AttendanceCard from '@/components/Presensi/attendenceCard'
-import AttendanceModal from '@/components/Presensi/attendanceModal'
+import AttendanceModal from '@/components/Presensi/AttendanceModal'
 import UserInfo from '@/components/Presensi/userInfo'
 
 export default function AbsenPage() {
