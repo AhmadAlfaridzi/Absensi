@@ -29,8 +29,8 @@ const columns: ColumnDef<UserProfile>[] = [
       const role = row.getValue("role")
       return (
         <Badge variant="outline" className={
-          role === 'admin' ? 'border-purple-600 text-purple-600' :
-          role === 'Owner' ? 'border-red-600 text-red-600' :
+          role === 'ADMIN' ? 'border-purple-600 text-purple-600' :
+          role === 'OWNER' ? 'border-red-600 text-red-600' :
           'border-gray-600 text-gray-600'
         }>
           {String(role)}
@@ -45,8 +45,8 @@ const columns: ColumnDef<UserProfile>[] = [
       const status = row.getValue("status")
       return (
         <Badge variant="outline" className={
-          status === 'Aktif' ? 'border-green-600 text-green-600' :
-          status === 'Nonaktif' ? 'border-red-600 text-red-600' :
+          status === 'AKTIF' ? 'border-green-600 text-green-600' :
+          status === 'NONAKTIF' ? 'border-red-600 text-red-600' :
           'border-yellow-600 text-yellow-600'
         }>
           {String(status)}
