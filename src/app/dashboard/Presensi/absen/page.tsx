@@ -16,6 +16,8 @@ export default function AbsenPage() {
   const [modalType, setModalType] = useState<'masuk' | 'pulang'>('masuk')
   const [attendanceTime, setAttendanceTime] = useState('')
   const [attendancePhoto, setAttendancePhoto] = useState<string | null>(null)
+  const [showBarcodeModal, setShowBarcodeModal] = useState(false) 
+  const [attendanceMethod, setAttendanceMethod] = useState<'selfie' | 'barcode'>('selfie')
 
   const handlePhotoTaken = (photo: string) => {
       setAttendancePhoto(photo)
@@ -116,6 +118,12 @@ export default function AbsenPage() {
           onClick={() => setAttendanceMethod('selfie')}
         >
           Selfie
+        </button>
+        <button
+          className={`px-4 py-2 rounded-lg ${attendanceMethod === 'barcode' ? 'bg-green-600' : 'bg-gray-700'}`}
+          onClick={() => setAttendanceMethod('barcode')}
+        >
+          Barcode
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
