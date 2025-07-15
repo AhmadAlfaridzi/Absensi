@@ -23,8 +23,9 @@ import {
   Package,
   LogIn
 } from 'lucide-react';
-import { User, roleToTitleCase } from '@/types/user';
+import { User } from '@/types/user';
 import { menuItems } from '@/data/menu-items';
+import { roleToTitleCase } from '@/types/roles';
 
 interface SidebarNavProps {
   user: User | null;
