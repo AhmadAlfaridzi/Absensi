@@ -11,7 +11,7 @@ const columns: ColumnDef<UserProfile>[] = [
     header: "Nama",
     cell: ({ row }) => (
       <Link 
-        href={`/dashboard/Pegawai/${row.original.id}`}
+        href={`/dashboard/pegawai/${row.original.id}`}
         className="font-medium text-blue-300 hover:underline"
       >
         {row.getValue("name")}
