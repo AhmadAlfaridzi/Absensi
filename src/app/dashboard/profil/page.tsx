@@ -22,7 +22,7 @@ export default function ProfilePage() {
           <Input value={user?.email} disabled />
         </div>
         
-{/*         <div className="space-y-2">
+  {/*         <div className="space-y-2">
           <Label>Nomor Telepon</Label>
           <Input value={user?.phone || ''} />
         </div> */}
