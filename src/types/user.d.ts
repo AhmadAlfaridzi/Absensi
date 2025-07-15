@@ -1,7 +1,47 @@
+// src/types/user.d.ts
 declare module '@/types/user' {
-  export type UserRole = 'admin' | 'Owner' | 'Direktur' | 'Manajer' | 'karyawan' | 'Teknisi';
+  export type UserRole = 'ADMIN' | 'OWNER' | 'DIREKTUR' | 'MANAJER' | 'KARYAWAN' | 'TEKNISI';
+  export type UserStatus = 'AKTIF' | 'NONAKTIF' | 'DITANGGUHKAN';
+  export type ApprovalStatus = 'Pending' | 'Disetujui' | 'Ditolak';
+  export type AttendanceStatus = 'Tepat Waktu' | 'Terlambat' | 'Pulang Cepat';
 
-  //data user
+  export declare const roleToTitleCase: Record<UserRole, string>;
+
+  export interface UserProfile {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    phone?: string;
+    address?: string;
+    birthDate?: string;
+    joinDate: string;
+    role: UserRole;
+    position: string;
+    department: string;
+    image?: string;
+    status: UserStatus;
+    lastLogin?: string;
+  }
+
+  export interface UserAccount extends UserProfile {
+    passwordHash?: string;
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
+  }
+
+  export interface ProfileChangeRequest {
+    id: string;
+    userId: string;
+    field: string;
+    oldValue: string;
+    newValue: string;
+    requestedAt: string;
+    approvedBy?: string;
+    approvalStatus: ApprovalStatus;
+    approvalNotes?: string;
+  }
+
   export interface User {
     id: string;
     name: string;
@@ -13,9 +53,6 @@ declare module '@/types/user' {
     image?: string;
   }
 
- export type AttendanceStatus = 'Tepat Waktu' | 'Terlambat' |'Pulang Cepat'};
-
- // data absensi
   export interface AttendanceRecord {
     id: string;
     userId: string;
@@ -32,3 +69,37 @@ declare module '@/types/user' {
       position: string;
     };
   }
+
+  export interface LoginHistory {
+    id: string;
+    userId: string;
+    loginTime: string;
+    ipAddress: string;
+    device: string;
+    location?: string;
+    status: 'Success' | 'Failed';
+    failureReason?: string;  
+  }
+
+export interface MenuItem {
+    name: string;
+    href: string;
+    icon?: React.ReactNode;
+    items: {
+      name: string;
+      href: string;
+      icon?: React.ReactNode;
+      allowedRoles?: UserRole[];
+    }[];
+    allowedRoles: UserRole[];
+  }
+
+  export interface SubMenuItem {
+    name: string;
+    href: string;
+    icon?: React.ReactNode;
+    allowedRoles?: UserRole[];
+  }
+
+}
+
