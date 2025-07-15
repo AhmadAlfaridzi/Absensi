@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { User } from '@/types/user'
-import { authUsers } from '@/data/users'
+
 
 interface AuthContextType {
   user: User | null
@@ -26,47 +26,76 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
-   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
+ useEffect(() => {
+    const loadUser = () => {
+      try {
+        const storedUser = localStorage.getItem('user')
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser)
+          setUser(parsedUser)
+        }
+      } catch (error) {
+        console.error('Failed to parse user data', error)
+        localStorage.removeItem('user')
+      } finally {
+        setIsLoading(false)
+      }
     }
-    setIsLoading(false) 
+
+    loadUser()
   }, [])
 
- const login = async (username: string, password: string) => {
 
-  return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        const foundUser = authUsers.find(u => 
-          u.username === username && password === '123456' // Password dummy
-        )
-        if (foundUser) {
-          setUser(foundUser)
-          localStorage.setItem('user', JSON.stringify(foundUser))
-          resolve()
-        } else {
-          reject(new Error('Invalid credentials'))
-        }
-      }, 500)
-    })
+  const login = async (username: string, password: string) => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), password }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Login failed')
+      }
+
+      const result = await response.json()
+      if (result.success && result.data) {
+        setUser(result.data)
+        localStorage.setItem('user', JSON.stringify(result.data))
+      } else {
+        throw new Error('Invalid response format')
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
   }
 
+  
   const logout = () => {
     setUser(null)
     localStorage.removeItem('user')
     router.push('/login')
   }
 
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, isLoading }}>
+   return (
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        isAuthenticated: !!user, 
+        login, 
+        logout, 
+        isLoading 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) throw new Error('useAuth must be used within AuthProvider')
-  return context
+  return useContext(AuthContext)
 }
