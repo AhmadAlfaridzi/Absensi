@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/authContext'
-// import { useRouter } from 'next/navigation'
-// import { ArrowLeft } from 'lucide-react' 
-// import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft } from 'lucide-react' 
+import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import AttendanceCard from '@/components/Presensi/attendenceCard'
 import AttendanceModal from '@/components/Presensi/attendanceModal'
@@ -11,37 +11,33 @@ import UserInfo from '@/components/Presensi/userInfo'
 
 export default function AbsenPage() {
   const { user } = useAuth()
-  // const router = useRouter()
-  // const [isMobile, setIsMobile] = useState(false)
+  const router = useRouter()
+  const [isMobile, setIsMobile] = useState(false)
 
-  // useEffect(() => {
-  //   const checkIfMobile = () => {
-  //     setIsMobile(window.innerWidth < 768)
-  //   }
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
     
-  //   checkIfMobile()
-  //   window.addEventListener('resize', checkIfMobile)
-  //   return () => window.removeEventListener('resize', checkIfMobile)
-  // }, [])
+    checkIfMobile()
+    window.addEventListener('resize', checkIfMobile)
+    return () => window.removeEventListener('resize', checkIfMobile)
+  }, [])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<'masuk' | 'pulang'>('masuk')
   const [attendanceTime, setAttendanceTime] = useState('')
   const [attendancePhoto, setAttendancePhoto] = useState<string | null>(null)
-  // const [attendanceNote, setAttendanceNote] = useState('')
 
-  // const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   setAttendanceNote(e.target.value)
-  // }
 
   const handlePhotoTaken = (photo: string) => {
       setAttendancePhoto(photo)
     }
 
-  // const handleBackClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault()
-  //   router.push('/dashboard')
-  // }
+  const handleBackClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    router.push('/dashboard')
+  }
 
   const [currentDate] = useState(new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
@@ -104,9 +100,9 @@ export default function AbsenPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 p-6 bg-[#1a1a1a]  text-white"
+      className="space-y-6 p-6 bg-[#1a1a1a] min-h-screen text-white"
     >
-      {/* {isMobile && (
+      {isMobile && (
         <Button 
           variant="ghost"
           onClick={handleBackClick}
@@ -115,7 +111,7 @@ export default function AbsenPage() {
           <ArrowLeft className="h-5 w-5 mr-2" />
           Kembali ke Dashboard
         </Button>
-      )} */}
+      )}
 
       <UserInfo 
         user={user} 
