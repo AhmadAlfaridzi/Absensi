@@ -1,4 +1,3 @@
-// src/app/dashboard/Pegawai/[id]/page.tsx
 'use client'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -15,7 +14,7 @@ export default function DetailPegawai({ params }: { params: { id: string } }) {
     <div className="p-6 bg-[#1e1e1e] text-gray-100">
       <div className="mb-6">
         <Button variant="ghost" asChild>
-          <Link href="/dashboard/Pegawai" className="flex items-center gap-1 text-gray-300">
+          <Link href="/dashboard/pegawai" className="flex items-center gap-1 text-gray-300">
             <ChevronLeft className="h-4 w-4" />
             Kembali
           </Link>

@@ -11,7 +11,7 @@ export default function PegawaiPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Manajemen Pegawai</h1>
         <Button asChild className="bg-blue-600 hover:bg-blue-700">
-          <Link href="/dashboard/Pegawai/tambah">
+          <Link href="/dashboard/pegawai/tambah">
             <Plus className="mr-2 h-4 w-4" />
             Tambah Pegawai
           </Link>
