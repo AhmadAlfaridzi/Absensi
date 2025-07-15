@@ -1,11 +1,8 @@
-// src/types/user.d.ts
-declare module '@/types/user' {
+  
   export type UserRole = 'ADMIN' | 'OWNER' | 'DIREKTUR' | 'MANAJER' | 'KARYAWAN' | 'TEKNISI';
   export type UserStatus = 'AKTIF' | 'NONAKTIF' | 'DITANGGUHKAN';
   export type ApprovalStatus = 'Pending' | 'Disetujui' | 'Ditolak';
   export type AttendanceStatus = 'Tepat Waktu' | 'Terlambat' | 'Pulang Cepat';
-
-  export declare const roleToTitleCase: Record<UserRole, string>;
 
   export interface UserProfile {
     id: string;
@@ -101,5 +98,5 @@ export interface MenuItem {
     allowedRoles?: UserRole[];
   }
 
-}
+
 
