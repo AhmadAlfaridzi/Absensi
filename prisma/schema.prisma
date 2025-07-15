@@ -1,5 +1,7 @@
+
 generator client {
   provider = "prisma-client-js"
+  // HAPUS previewFeatures yang error
 }
 
 datasource db {
@@ -7,57 +9,78 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Model User (Sesuai UserProfile & UserAccount)
 model User {
-  id          String      @id @default(uuid())
-  username    String     @unique
-  email       String     @unique
-  password    String
-  name        String
-  role        Role       @default(TEKNISI)
-  position    String?
-  department  String?
-  image       String?
-  status      UserStatus @default(AKTIF)
-  lastLogin   DateTime?
-  attendances Attendance[]
-  devices     Device[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  @@index([username, email])
+  id                  String              @id @default(uuid())
+  name                String
+  username            String              @unique
+  email               String              @unique
+  phone               String?
+  address             String?
+  birthDate           String?
+  joinDate            String
+  role                Role    @default(KARYAWAN)             
+  position            String
+  department          String
+  image               String?
+  status              UserStatus              
+  lastLogin           DateTime?
+  passwordHash        String              
+  resetPasswordToken  String?
+  resetPasswordExpires DateTime?
+  attendances         Attendance[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  barcodes            Barcode[]
+  @@map("users")
 }
 
+// Model Absensi (Sesuai AttendanceRecord)
 model Attendance {
   id          String   @id @default(uuid())
-  userId      String
   user        User     @relation(fields: [userId], references: [id])
-  date        DateTime
-  clockIn     DateTime
-  clockOut    DateTime?
+  userId      String
+  date        String   // Format: "YYYY-MM-DD"
+  clockIn     String   // Format: "HH:MM"
+  clockOut    String?  // Bisa null jika belum clockOut
   status      AttendanceStatus
-  photoIn     String
+  photoIn     String?
   photoOut    String?
-  location    Json?
-  deviceId    String?
-  device      Device?  @relation(fields: [deviceId], references: [id])
   createdAt   DateTime @default(now())
-
-  @@index([userId, date])
 }
 
-model Device {
-  id          String       @id @default(uuid())
-  name        String
-  macAddress  String?     @unique
-  userId      String?
-  user        User?       @relation(fields: [userId], references: [id])
-  lastActive  DateTime?
-  attendances Attendance[]
+// Model Alat Kalibrasi
+model AlatKalibrasi {
+  id                  String   @id @default(uuid())
+  nama_alat           String
+  merek_model         String
+  nomor_seri          String   @unique
+  rentang_pengukuran  String
+  kelas_akurasi       String
+  tanggal_kalibrasi   String
+  tanggal_kadaluarsa  String
+  id_lokasi           String
+  status              String   // "Aktif", "Tidak Aktif", dll.
+  foto                String?
+  createdAt           DateTime @default(now())
+}
+
+// Model SparePart
+model SparePart {
+  id          String   @id @default(uuid())
+  nama        String
+  kode        String   @unique
+  jumlah      Int
+  lokasi      String
+  supplier    String?
+  foto        String?
+  status      String   // "Tersedia", "Habis", "Dipesan"
+  createdAt   DateTime @default(now())
 }
 
 enum Role {
   ADMIN
-  OWNER
+  OWNER 
   DIREKTUR
   MANAJER
   KARYAWAN
@@ -74,4 +97,12 @@ enum AttendanceStatus {
   TEPAT_WAKTU
   TERLAMBAT
   PULANG_CEPAT
+}
+
+model Barcode {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  code      String    @unique
+  createdAt DateTime  @default(now())
 }
