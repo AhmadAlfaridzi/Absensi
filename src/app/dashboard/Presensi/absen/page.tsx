@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import AttendanceCard from '@/components/Presensi/attendenceCard'
 import AttendanceModal from '@/components/Presensi/attendanceModal'
 import UserInfo from '@/components/Presensi/userInfo'
+import BarcodeScannerModal from '@/components/Presensi/barcodeScannerModal'
 
 export default function AbsenPage() {
   const { user } = useAuth()
@@ -15,6 +16,11 @@ export default function AbsenPage() {
   const [modalType, setModalType] = useState<'masuk' | 'pulang'>('masuk')
   const [attendanceTime, setAttendanceTime] = useState('')
   const [attendancePhoto, setAttendancePhoto] = useState<string | null>(null)
+<<<<<<< HEAD
+=======
+  const [showBarcodeModal, setShowBarcodeModal] = useState(false) 
+  const [attendanceMethod, setAttendanceMethod] = useState<'selfie' | 'barcode'>('selfie')
+>>>>>>> inventory
 
   const handlePhotoTaken = (photo: string) => {
       setAttendancePhoto(photo)
@@ -52,8 +58,12 @@ export default function AbsenPage() {
     setAttendanceTime(new Date().toLocaleTimeString('id-ID', {
       hour: '2-digit',
       minute: '2-digit'
-    }))
-    setIsModalOpen(true)
+    })) 
+      if (attendanceMethod === 'selfie') {
+      setIsModalOpen(true)
+    } else {
+      setShowBarcodeModal(true)
+    }
   }
 
   const handleSubmitAttendance = () => {
@@ -66,6 +76,21 @@ export default function AbsenPage() {
     })
     setIsModalOpen(false)
     setAttendancePhoto(null)
+  }
+
+   const handleBarcodeScanned = (code: string) => {
+    console.log('Barcode scanned:', code)
+    // Kirim data ke API
+    fetch('/api/attendance', {
+      method: 'POST',
+      body: JSON.stringify({
+        userId: user?.id,
+        type: modalType,
+        barcode: code,
+        time: new Date().toISOString()
+      })
+    })
+    setShowBarcodeModal(false)
   }
 
   if (!user) {
@@ -90,6 +115,20 @@ export default function AbsenPage() {
         currentDate={currentDate} 
       />
 
+      <div className="flex gap-4 mb-6 justify-center">
+        <button 
+          className={`px-4 py-2 rounded-lg ${attendanceMethod === 'selfie' ? 'bg-green-600' : 'bg-gray-700'}`}
+          onClick={() => setAttendanceMethod('selfie')}
+        >
+          Selfie
+        </button>
+        <button
+          className={`px-4 py-2 rounded-lg ${attendanceMethod === 'barcode' ? 'bg-green-600' : 'bg-gray-700'}`}
+          onClick={() => setAttendanceMethod('barcode')}
+        >
+          Barcode
+        </button>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <AttendanceCard 
           type="masuk" 
@@ -112,6 +151,14 @@ export default function AbsenPage() {
         onPhotoTaken={handlePhotoTaken}
         onSubmit={handleSubmitAttendance}
       />
+
+      <BarcodeScannerModal
+        isOpen={showBarcodeModal}
+        onClose={() => setShowBarcodeModal(false)}
+        userId={user.id}
+        onScanSuccess={handleBarcodeScanned}
+      />
+
     </motion.div>
   )
 }
