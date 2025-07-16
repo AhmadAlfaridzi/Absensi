@@ -53,7 +53,7 @@ export default function LoginPage() {
       await login(username, password)
       toast.success('Login berhasil!')
       const user = JSON.parse(localStorage.getItem('user') || '{}')
-        if (user?.role === 'Teknisi') {
+        if (user.role === 'TEKNISI') {
           router.push('/dashboard/presensi/absen')
         } else {
           router.push('/dashboard')
