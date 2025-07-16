@@ -41,9 +41,9 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!username.trim() || !password) {
-      setError('Username dan password harus diisi');
-      return;
+    if (!username || !password) {
+      setError('Username dan password harus diisi')
+      return
     }
     
     setIsLoading(true)
@@ -52,9 +52,8 @@ export default function LoginPage() {
     try {
       await login(username, password)
       toast.success('Login berhasil!')
-
       const user = JSON.parse(localStorage.getItem('user') || '{}')
-       if (user?.role === 'TEKNISI') {
+        if (user.role === 'TEKNISI') {
           router.push('/dashboard/presensi/absen')
         } else {
           router.push('/dashboard')
