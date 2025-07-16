@@ -1,4 +1,3 @@
-// src/types/data-table.ts
 export interface DataTableColumn<T, K extends keyof T> {
   key: K
   header: string
