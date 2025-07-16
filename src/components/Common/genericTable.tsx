@@ -24,8 +24,6 @@ interface DataTableProps<TData> {
   noDataMessage?: string
   showPagination?: boolean
   pageSize?: number
-  customHeaderClass?: string;
-  customRowClass?: string;
 }
 
 export function GenericTable<TData>({
@@ -98,7 +96,6 @@ export function GenericTable<TData>({
           </TableBody>
         </Table>
       </div>
-
       {showPagination && (
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 px-2">
         <div className="text-sm text-gray-400">
