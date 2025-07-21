@@ -7,6 +7,11 @@ import { format } from "date-fns"
 import { id } from "date-fns/locale"
 import { GenericTable } from "@/components/Common/genericTable"
 import { AttendanceRecord } from "@/types/attendance"
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 type ProcessedAttendanceRecord = AttendanceRecord & {
   onPhotoClick?: (photoUrl: string, type: string) => void
@@ -103,6 +108,56 @@ const columns: ColumnDef<ProcessedAttendanceRecord>[] = [
           )}
         </div>
       )
+    }
+  },
+  {
+    id: "barcode",
+    header: "Barcode",
+    cell: ({ row }) => {
+      const { barcodeIn, barcodeOut, barcodeInAt, barcodeOutAt } = row.original;
+
+      return (
+        <div className="flex flex-col gap-1">
+          {/* Barcode Masuk */}
+          {barcodeIn && (
+            <div className="flex items-center gap-2">
+              <span className="text-green-400 text-xs">Masuk:</span>
+              <Tooltip>
+                <TooltipTrigger>
+                  <span className="text-gray-300 text-sm font-mono">
+                    {barcodeIn}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Waktu: {barcodeInAt ? new Date(barcodeInAt).toLocaleString() : '-'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+
+          {/* Barcode Keluar */}
+          {barcodeOut && (
+            <div className="flex items-center gap-2">
+              <span className="text-red-400 text-xs">Pulang:</span>
+              <Tooltip>
+                <TooltipTrigger>
+                  <span className="text-gray-300 text-sm font-mono">
+                    {barcodeOut}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Waktu: {barcodeOutAt ? new Date(barcodeOutAt).toLocaleString() : '-'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+
+          {/* Jika tidak ada data */}
+          {!barcodeIn && !barcodeOut && (
+            <span className="text-gray-500 text-sm">-</span>
+          )}
+        </div>
+      );
     }
   }
 ]
