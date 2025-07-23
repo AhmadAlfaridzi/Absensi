@@ -19,6 +19,10 @@ export default function AbsenPage() {
   const handlePhotoTaken = (photo: string) => {
       setAttendancePhoto(photo)
     }
+     const handleScanSuccess = (decodedText: string) => {
+    console.log('QR Code scanned:', decodedText)
+      handleSubmitAttendance()
+     }
 
   const [currentDate] = useState(new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
@@ -111,6 +115,7 @@ export default function AbsenPage() {
         attendanceTime={attendanceTime}
         onPhotoTaken={handlePhotoTaken}
         onSubmit={handleSubmitAttendance}
+        onScanSuccess={handleScanSuccess}
       />
     </motion.div>
   )
