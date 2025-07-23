@@ -47,6 +47,10 @@ model Attendance {
   photoIn     String?
   photoOut    String?
   createdAt   DateTime @default(now())
+  barcodeIn    String?  
+  barcodeOut   String?  
+  barcodeInAt  DateTime?
+  barcodeOutAt DateTime? 
 }
 
 // Model Alat Kalibrasi

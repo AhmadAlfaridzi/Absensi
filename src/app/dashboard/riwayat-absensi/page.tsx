@@ -62,11 +62,6 @@ export default function RiwayatAbsenPage() {
         )
       }
       
-      if (user?.role !== 'Direktur') {
-        filteredDummy = filteredDummy.filter(record => 
-          record.employee.id === user?.id
-        )
-      }
       
       setData(filteredDummy)
     } catch (error) {
@@ -74,7 +69,8 @@ export default function RiwayatAbsenPage() {
     } finally {
       setLoading(false)
     }
-  }, [dateRange, filters, user?.role, user?.id])
+  }, [dateRange, filters])
+  //  }, [dateRange, filters, user?.role, user?.id])
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -139,7 +135,7 @@ export default function RiwayatAbsenPage() {
     >
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-100">
-          {user?.role === 'Direktur' ? 'Riwayat Absensi Karyawan' : 'Riwayat Absensi Saya'}
+          {user?.role === 'ADMIN' ? 'Riwayat Absensi Karyawan' : 'Riwayat Absensi Saya'}
         </h1>
         <Button 
           onClick={resetFilters} 

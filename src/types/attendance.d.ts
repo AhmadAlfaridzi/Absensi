@@ -14,6 +14,10 @@ export interface AttendanceRecord {
   employee: Employee
   photoIn: string | null
   photoOut: string | null
+  barcodeIn?: string | null;
+  barcodeOut?: string | null;
+  barcodeInAt?: string | null; 
+  barcodeOutAt?: string | null;
 }
 
 
