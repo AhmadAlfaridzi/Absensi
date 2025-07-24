@@ -1,7 +1,5 @@
-
 generator client {
   provider = "prisma-client-js"
-  // HAPUS previewFeatures yang error
 }
 
 datasource db {
@@ -9,78 +7,84 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Model User (Sesuai UserProfile & UserAccount)
 model User {
-  id                  String              @id @default(uuid())
-  name                String
-  username            String              @unique
-  email               String              @unique
-  phone               String?
-  address             String?
-  birthDate           String?
-  joinDate            String
-  role                Role    @default(KARYAWAN)             
-  position            String
-  department          String
-  image               String?
-  status              UserStatus              
-  lastLogin           DateTime?
-  passwordHash        String              
-  resetPasswordToken  String?
+  id                   String       @id @default(uuid())
+  name                 String
+  username             String       @unique
+  email                String       @unique
+  phone                String?
+  address              String?
+  birthDate            String?
+  joinDate             String
+  role                 Role         @default(KARYAWAN)
+  position             String
+  department           String
+  image                String?
+  status               UserStatus
+  lastLogin            DateTime?
+  passwordHash         String
+  resetPasswordToken   String?
   resetPasswordExpires DateTime?
-  attendances         Attendance[]
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  barcodes            Barcode[]
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  attendances          Attendance[]
+  barcodes             Barcode[]
+  surat                SuratKeluar[]
+  approverSurat        Approver[]
   @@map("users")
 }
 
-// Model Absensi (Sesuai AttendanceRecord)
 model Attendance {
-  id          String   @id @default(uuid())
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
-  date        String   // Format: "YYYY-MM-DD"
-  clockIn     String   // Format: "HH:MM"
-  clockOut    String?  // Bisa null jika belum clockOut
-  status      AttendanceStatus
-  photoIn     String?
-  photoOut    String?
-  createdAt   DateTime @default(now())
+  id        String           @id @default(uuid())
+  userId    String
+  date      String
+  clockIn   String
+  clockOut  String?
+  status    AttendanceStatus
+  photoIn   String?
+  photoOut  String?
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id])
 }
 
-// Model Alat Kalibrasi
 model AlatKalibrasi {
-  id                  String   @id @default(uuid())
-  nama_alat           String
-  merek_model         String
-  nomor_seri          String   @unique
-  rentang_pengukuran  String
-  kelas_akurasi       String
-  tanggal_kalibrasi   String
-  tanggal_kadaluarsa  String
-  id_lokasi           String
-  status              String   // "Aktif", "Tidak Aktif", dll.
-  foto                String?
-  createdAt           DateTime @default(now())
+  id                 String   @id @default(uuid())
+  nama_alat          String
+  merek_model        String
+  nomor_seri         String   @unique
+  rentang_pengukuran String
+  kelas_akurasi      String
+  tanggal_kalibrasi  String
+  tanggal_kadaluarsa String
+  id_lokasi          String
+  status             String
+  foto               String?
+  createdAt          DateTime @default(now())
 }
 
-// Model SparePart
 model SparePart {
-  id          String   @id @default(uuid())
-  nama        String
-  kode        String   @unique
-  jumlah      Int
-  lokasi      String
-  supplier    String?
-  foto        String?
-  status      String   // "Tersedia", "Habis", "Dipesan"
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  nama      String
+  kode      String   @unique
+  jumlah    Int
+  lokasi    String
+  supplier  String?
+  foto      String?
+  status    String
+  createdAt DateTime @default(now())
+}
+
+model Barcode {
+  id        String   @id @default(uuid())
+  userId    String
+  code      String   @unique
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 enum Role {
   ADMIN
-  OWNER 
+  OWNER
   DIREKTUR
   MANAJER
   KARYAWAN
@@ -99,10 +103,79 @@ enum AttendanceStatus {
   PULANG_CEPAT
 }
 
-model Barcode {
-  id        String    @id @default(uuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  code      String    @unique
-  createdAt DateTime  @default(now())
+model Surat {
+  id          String   @id @default(uuid())
+  jenis       JenisSurat
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  tanggalMulai DateTime
+  tanggalSelesai DateTime
+  alasan      String
+  lampiran    String?  
+  status      StatusSurat @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  diagnosa    String?  
+  tujuan      String?  
+}
+
+model SuratKeluar {  
+  id          String     @id @default(uuid())
+  jenisSurat  JenisSurat
+  nomorSurat  String?
+  tanggal     DateTime   @default(now())
+  pemohon     User       @relation(fields: [userId], references: [id])
+  userId      String
+  status      StatusSurat @default(DRAFT)
+  approvers   Approver[]
+  data        Json
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  pdfUrl      String?
+  catatan     String?
+  lampiran    String[]
+
+  @@index([userId])
+  @@map("surat")  
+}
+
+model Approver {
+  id          String      @id @default(uuid())
+  surat       SuratKeluar @relation(fields: [suratId], references: [id], name: "ApproverToSuratKeluar")
+  suratId     String
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  level       Int
+  status      ApproverStatus @default(PENDING)
+  catatan     String?
+  tanggal     DateTime    @default(now())
+
+  @@unique([suratId, userId])
+  @@map("approvers")
+}
+
+
+enum JenisSurat {
+  IZIN_SAKIT
+  PERJALANAN_DINAS
+  CUTI
+  TUGAS_LUAR
+  UNDURAN
+  LAINNYA
+}
+
+enum StatusSurat {
+  DRAFT
+  PENDING
+  REVIEW_MANAGER
+  REVIEW_DIRECTOR
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum ApproverStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
