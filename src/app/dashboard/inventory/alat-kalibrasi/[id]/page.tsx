@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { dummyAlatKalibrasi } from '@/data/alatKalibrasi'
 
-export default function DetailAlatKalibrasi({ params,}: { params: { id: string };}) {
+export default  async function DetailAlatKalibrasi({ params,}: { params: { id: string };}) {
   const { id } = params;
   const data = dummyAlatKalibrasi.find(item => item.id === id)
 
