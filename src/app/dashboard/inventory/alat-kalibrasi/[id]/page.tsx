@@ -6,12 +6,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { dummyAlatKalibrasi } from '@/data/alatKalibrasi'
 
-interface ParamsType {
-  id: string
-}
-
-export default function DetailAlatKalibrasi({ params }: { params: ParamsType }) {
-  const { id } = params
+export default function DetailAlatKalibrasi({ params,}: { params: { id: string };}) {
+  const { id } = params;
   const data = dummyAlatKalibrasi.find(item => item.id === id)
 
   if (!data) return notFound()
