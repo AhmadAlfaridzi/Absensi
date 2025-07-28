@@ -5,9 +5,16 @@ import { ChevronLeft} from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { dummyAlatKalibrasi } from '@/data/alatKalibrasi'
+import { use } from 'react'
 
-export default function DetailAlatKalibrasi({ params }: { params: { id: string } }) {
-  const data = dummyAlatKalibrasi.find(item => item.id === params.id)
+interface ParamsType {
+  id: string
+}
+
+export default function DetailAlatKalibrasi({ params }: { params: ParamsType }) {
+  const { id } = use<ParamsType>(params as unknown as Promise<ParamsType>)
+  
+  const data = dummyAlatKalibrasi.find(item => item.id === id)
 
   if (!data) return notFound()
 
@@ -76,6 +83,8 @@ export default function DetailAlatKalibrasi({ params }: { params: { id: string }
               <Image 
                 src={data.foto} 
                 alt={data.nama_alat}
+                width={500}
+                height={500}
                 className="rounded-md object-cover w-full h-full"
                 unoptimized
               />
