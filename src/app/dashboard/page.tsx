@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { GenericTable } from '@/components/Common/genericTable'
 import { ColumnDef } from '@tanstack/react-table'
 import { dummyAttendance } from '@/data/attendence'
-import { format, isToday } from 'date-fns'
+import { isToday } from 'date-fns'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AttendanceRecord } from '@/types/attendance'
@@ -34,7 +34,6 @@ import { useState } from 'react'
     terlambat: todayRecords.filter(r => r.status === 'Terlambat').length,
     tidakHadir: uniqueEmployees - todayRecords.length // Asumsi yang tidak absen = tidak hadir
   }
-
   return stats
 }
 
