@@ -34,7 +34,7 @@ export default function AlatKalibrasiPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Daftar Alat Kalibrasi</h1>
         <Button asChild className="bg-blue-600 hover:bg-blue-700">
-          <Link href="/inventory/alat-kalibrasi/tambah">
+          <Link href="/inventaris/alat-kalibrasi/tambah">
             <Plus className="mr-2 h-4 w-4" />
             Tambah Alat
           </Link>

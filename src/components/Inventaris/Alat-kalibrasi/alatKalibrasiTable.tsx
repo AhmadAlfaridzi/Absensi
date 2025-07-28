@@ -12,7 +12,7 @@ export const columns: ColumnDef<AlatKalibrasi>[] = [
     header: "ID Alat",
     cell: ({ row }) => (
       <Link 
-        href={`/dashboard/inventory/alat-kalibrasi/${row.original.id}`}
+        href={`/inventaris/alat-kalibrasi/${row.original.id}`}
         className="font-medium text-blue-300 hover:underline"
       >
         {row.getValue("id")}
