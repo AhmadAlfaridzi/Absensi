@@ -12,8 +12,7 @@ interface ParamsType {
 }
 
 export default function DetailAlatKalibrasi({ params }: { params: ParamsType }) {
-  const { id } = use<ParamsType>(params as unknown as Promise<ParamsType>)
-  
+  const { id } = params
   const data = dummyAlatKalibrasi.find(item => item.id === id)
 
   if (!data) return notFound()
