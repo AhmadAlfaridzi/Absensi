@@ -1,8 +1,7 @@
 'use client'
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Barcode, RotateCw } from 'lucide-react';
-
+import { Barcode } from 'lucide-react';
 
 interface BarcodeScannerProps {
   onScan: (barcode: string) => void;
