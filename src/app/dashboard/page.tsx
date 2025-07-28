@@ -34,7 +34,6 @@ import { useState } from 'react'
     terlambat: todayRecords.filter(r => r.status === 'Terlambat').length,
     tidakHadir: uniqueEmployees - todayRecords.length // Asumsi yang tidak absen = tidak hadir
   }
-
   return stats
 }
 
