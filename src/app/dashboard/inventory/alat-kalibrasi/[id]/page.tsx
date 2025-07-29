@@ -5,14 +5,14 @@ import { ChevronLeft} from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { dummyAlatKalibrasi } from '@/data/alatKalibrasi'
-import { use } from 'react'
+import { use } from 'react' 
 
-interface ParamsType {
+interface PageParams {
   id: string
 }
 
-export default function DetailAlatKalibrasi({ params }: { params: ParamsType }) {
-  const { id } = params
+export default function DetailAlatKalibrasi({ params }: { params: Promise<PageParams> }) {
+  const { id } = use(params)
   const data = dummyAlatKalibrasi.find(item => item.id === id)
 
   if (!data) return notFound()
