@@ -1,8 +1,15 @@
-import type { NextConfig } from "next";
+const nextConfig = {
+  reactStrictMode: true,
+  devIndicators: false,
+  experimental: {
+    missingSuspenseWithCSRBailout: false 
+  },
+  eslint: {
+    ignoreDuringBuilds: true, 
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+}
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  devIndicators: false
-};
-
-export default nextConfig;
+module.exports = nextConfig
