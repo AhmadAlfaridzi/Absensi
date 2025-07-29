@@ -1,8 +1,10 @@
-import { PrismaClient, Role, UserStatus } from '@prisma/client'
+import { Role, UserStatus } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { dummyPegawai } from '../src/data/users'
+import prisma from '../src/lib/prisma'
+import { attendanceService } from '../src/components/Presensi/attendanceService'
 
-const prisma = new PrismaClient()
+// const prisma = new PrismaClient()
 const SALT_ROUNDS = 10
 
 function toRole(role: string): Role {
@@ -37,43 +39,23 @@ function toUserStatus(status?: string): UserStatus {
 
 async function main() {
   try {
-    console.log('Memulai proses seeding...');
+    console.log('🌱 Starting seed process...')
     
-    // Validasi data dummy sebelum memproses
-    const validatedUsers = dummyPegawai.filter(user => {
-      if (!user.username) {
-        console.error('User tanpa username ditemukan:', user);
-        return false;
-      }
-      return true;
-    });
+    // 1. Clean up existing data
+    console.log('🧹 Cleaning up old data...')
+    await prisma.attendance.deleteMany()
+    await prisma.user.deleteMany()
 
-    if (validatedUsers.length !== dummyPegawai.length) {
-      console.warn(`Beberapa user tidak valid: ${dummyPegawai.length - validatedUsers.length} dari ${dummyPegawai.length}`);
-    }
-
-    console.log('Menghapus data user lama...');
-    await prisma.user.deleteMany();
-
-    console.log('Membuat user baru...');
-    
-    for (const user of validatedUsers) {
+    // 2. Seed users
+    console.log('👥 Seeding users...')
+    for (const user of dummyPegawai) {
       try {
-        // Pastikan username ada dan valid
-        const username = String(user.username).trim();
-        if (!username) {
-          console.error('Username kosong untuk user:', user.id);
-          continue;
-        }
-
-        const plainPassword = `${username}123`; // Gunakan username yang sudah divalidasi
-        const hashedPassword = await bcrypt.hash(plainPassword, SALT_ROUNDS);
-
+        const hashedPassword = await bcrypt.hash(`${user.username}123`, SALT_ROUNDS)
         await prisma.user.create({
           data: {
             id: user.id,
             name: user.name,
-            username: username,
+            username: user.username,
             email: user.email,
             phone: user.phone || null,
             address: user.address || null,
@@ -84,28 +66,29 @@ async function main() {
             department: user.department,
             image: user.image || null,
             status: toUserStatus(user.status),
-            lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
             passwordHash: hashedPassword,
             resetPasswordToken: null,
             resetPasswordExpires: null,
             createdAt: new Date(),
             updatedAt: new Date()
           }
-        });
-
-        console.log(`User ${username} berhasil dibuat`);
+        })
       } catch (error) {
-        console.error(`Gagal membuat user ${user.id}:`, error);
+        console.error(`Failed to create user ${user.id}:`, error)
       }
     }
 
-    console.log(`✅ Berhasil membuat ${validatedUsers.length} user`);
+    // 3. Seed attendances
+    console.log('⏱️ Seeding attendances...')
+    await attendanceService.seedDummyAttendances()
+
+    console.log('🎉 Seeding completed successfully!')
   } catch (error) {
-    console.error('❌ Seeding gagal:', error);
-    process.exit(1);
+    console.error('💥 Seeding failed:', error)
+    process.exit(1)
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
-main();
+main()
