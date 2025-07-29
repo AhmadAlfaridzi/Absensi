@@ -6,13 +6,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { dummyAlatKalibrasi } from '@/data/alatKalibrasi'
 import { use } from 'react'
-import { Suspense } from 'react'
 
-// Komponen utama yang menerima params biasa
-function Content({ id }: { id: string }) {
-  const data = dummyAlatKalibrasi.find(item => item.id === id)
+type UsableParams<T> = T | Promise<T>
+
+export default function Page({ params }: { params: UsableParams<{ id: string }> }) {
+  const unwrappedParams = params instanceof Promise ? use(params) : params
+  
+  const data = dummyAlatKalibrasi.find(item => item.id === unwrappedParams.id)
   if (!data) return notFound()
-
  return (
     <div className="p-6 bg-[#1e1e1e] text-gray-100">
       <div className="mb-6">
@@ -88,15 +89,5 @@ function Content({ id }: { id: string }) {
         )}
       </div>
     </div>
-  )
-}
-
-export default function Page({ params }: { params: Promise<{ id: string }> }) {
-  const unwrappedParams = use(params)
-  
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Content id={unwrappedParams.id} />
-    </Suspense>
   )
 }
