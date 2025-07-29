@@ -7,11 +7,7 @@ import Image from 'next/image'
 import { dummyAlatKalibrasi } from '@/data/alatKalibrasi'
 import { use } from 'react' 
 
-interface PageParams {
-  id: string
-}
-
-export default function DetailAlatKalibrasi({ params }: { params: Promise<PageParams> }) {
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const data = dummyAlatKalibrasi.find(item => item.id === id)
 
