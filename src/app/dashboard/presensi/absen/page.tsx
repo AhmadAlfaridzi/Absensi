@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/authContext'
-// import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import AttendanceCard from '@/components/Presensi/attendenceCard'
 import AttendanceModal from '@/components/Presensi/attendanceModal'
@@ -9,8 +8,6 @@ import UserInfo from '@/components/Presensi/userInfo'
 
 export default function AbsenPage() {
   const { user } = useAuth()
-  // const router = useRouter()
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<'masuk' | 'pulang'>('masuk')
   const [attendanceTime, setAttendanceTime] = useState('')
@@ -18,11 +15,11 @@ export default function AbsenPage() {
 
   const handlePhotoTaken = (photo: string) => {
       setAttendancePhoto(photo)
-    }
-     const handleScanSuccess = (decodedText: string) => {
+  }
+  const handleScanSuccess = (decodedText: string) => {
     console.log('QR Code scanned:', decodedText)
       handleSubmitAttendance()
-     }
+  }
 
   const [currentDate] = useState(new Date().toLocaleDateString('id-ID', {
     weekday: 'long',

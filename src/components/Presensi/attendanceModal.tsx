@@ -31,13 +31,16 @@ export default function AttendanceModal({
   const qrContainerRef = useRef<HTMLDivElement>(null)
   const qrScannerRef = useRef<Html5Qrcode | null>(null)
   
-  const [photo, setPhoto] = useState<string | null>(null)
-  const [mode, setMode] = useState<'selfie' | 'qr'>('selfie')
-  const [cameraFacingMode, setCameraFacingMode] = useState<'user' | 'environment'>('environment')
+  const [mode, setMode] = useState({
+    type: 'selfie' as 'selfie' | 'qr',
+    cameraFacing: 'environment' as 'user' | 'environment',
+    photo: null as string | null
+  })
+
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
-  // fungsi untuk kamera
-  const cleanupCamera = async () => {
+  // Camera functions
+  const stopCamera = () => {
     if (videoRef.current?.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream
       stream.getTracks().forEach(track => track.stop())
@@ -45,59 +48,25 @@ export default function AttendanceModal({
     }
   }
 
-  const cleanupScanner = async () => {
-    if (qrScannerRef.current) {
-      try {
-         await qrScannerRef.current.stop().catch(err => {
-      // Abaikan error jika scanner sudah berhenti
-      if (!err.message.includes('already stopped') && 
-          !err.message.includes('not running')) {
-        console.error("Error stopping scanner:", err);
-      }
-      });
-        qrScannerRef.current = null
-      } catch (err) {
-        console.error("Error stopping scanner:", err)
-      }
-    }
-  }
-
-  const cleanupAll = async () => {
-    try {
-      await cleanupCamera()
-      await cleanupScanner()
-    } catch (err) {
-      console.error("Error during cleanup:", err)
-    }
-  }
-
   const startCamera = async () => {
     try {
-      await cleanupAll()
-      
-      const facingMode = (mode === 'qr' && isMobile) 
-        ? 'environment' 
-        : cameraFacingMode
-      
-      const constraints = {
+      stopCamera()
+      const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          ...(isMobile && { facingMode }), 
+          facingMode: mode.cameraFacing,
           width: { ideal: isMobile ? 1280 : 640 },
           height: { ideal: isMobile ? 720 : 480 }
         }
-      }
-      
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
-      
+      })
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream
-        videoRef.current.style.transform = (facingMode === 'user' && mode === 'selfie' && isMobile) 
-          ? 'scaleX(-1)' 
-          : 'scaleX(1)'
+        videoRef.current.style.transform = mode.cameraFacing === 'user' ? 'scaleX(-1)' : 'scaleX(1)'
         videoRef.current.style.objectFit = 'cover'
       }
     } catch (err) {
-      console.error("Error accessing camera:", err)
+      console.error("Camera error:", err)
+      setMode(prev => ({ ...prev, type: 'qr' }))
     }
   }
 
@@ -107,130 +76,127 @@ export default function AttendanceModal({
     const canvas = document.createElement('canvas')
     canvas.width = videoRef.current.videoWidth
     canvas.height = videoRef.current.videoHeight
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d')!
     
-    if (ctx) {
-      if (cameraFacingMode === 'user' && mode === 'selfie' && isMobile) {
-        ctx.translate(canvas.width, 0)
-        ctx.scale(-1, 1)
+    if (mode.cameraFacing === 'user') {
+      ctx.translate(canvas.width, 0)
+      ctx.scale(-1, 1)
+    }
+    
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height)
+    const photo = canvas.toDataURL('image/jpeg')
+    setMode(prev => ({ ...prev, photo }))
+    onPhotoTaken(photo)
+    stopCamera()
+  }
+
+  // QR Scanner functions
+   const stopScanner = async () => {
+    if (qrScannerRef.current) {
+      try {
+        await qrScannerRef.current.stop()
+      } catch (err) {
+        console.error("Error stopping scanner:", err)
       }
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height)
-      const photoData = canvas.toDataURL('image/jpeg')
-      setPhoto(photoData)
-      onPhotoTaken(photoData)
-      cleanupCamera()
+      qrScannerRef.current = null
     }
   }
-
-  const switchCamera = () => {
-    if (isMobile && mode === 'selfie') {
-      setCameraFacingMode(prev => prev === 'user' ? 'environment' : 'user')
-    }
-  }
-
-  const retakePhoto = () => {
-    setPhoto(null)
-    startCamera()
-  }
-
-  const handleClose = async () => {
-  try {
-    await cleanupAll();
-  } catch (err) {
-    console.error("Error during cleanup:", err);
-  } finally {
-    onOpenChange(false);
-  }
-};
 
   const startScanner = async () => {
     try {
-      await cleanupAll()
+      await stopScanner()
       if (!qrContainerRef.current) return
 
       const container = qrContainerRef.current
       container.innerHTML = ''
       
-      const scanner = new Html5Qrcode(container.id)
-      await scanner.start(
-        { 
-          facingMode: isMobile ? "environment" : "user" 
-        }, 
-        { 
-          fps: 10, 
-          qrbox: { width: 250, height: 250 },
-          aspectRatio: 4/3
-        },
-        (decodedText) => { 
-          onScanSuccess(decodedText) 
+      qrScannerRef.current = new Html5Qrcode(container.id)
+      await qrScannerRef.current.start(
+        { facingMode: isMobile ? "environment" : "user" }, 
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          onScanSuccess(decodedText)
         },
         (errorMessage) => {
-          if (!errorMessage.includes('NotFoundException')) {
-            console.log("Scan error:", errorMessage)
-          }
+          console.log("Scan error:", errorMessage)
         }
       )
-      qrScannerRef.current = scanner
     } catch (err) {
-      console.error("Scanner init error:", err)
-      await cleanupScanner()
-      setMode('selfie')
+      console.error("Scanner error:", err)
+      setMode(prev => ({ ...prev, type: 'selfie' }))
     }
   }
 
-  useEffect(() => {
+  const switchCamera = () => {
+    setMode(prev => ({
+      ...prev,
+      cameraFacing: prev.cameraFacing === 'user' ? 'environment' : 'user'
+    }))
+  }
+
+  const retakePhoto = () => {
+    setMode(prev => ({ ...prev, photo: null }))
+    startCamera()
+  }
+
+  const handleClose = () => {
+    if (mode.type === 'selfie') {
+      stopCamera()
+    } else {
+      stopScanner()
+    }
+    onOpenChange(false)
+  }
+
+
+  const handleModeChange = (newMode: 'selfie' | 'qr') => {
+    if (mode.type === newMode) return
+    setMode(prev => ({ ...prev, type: newMode }))
+  }
+
+ useEffect(() => {
     if (!isOpen) {
-      cleanupAll()
-      setPhoto(null)
+      stopCamera()
+      stopScanner()
       return
     }
 
-    const init = async () => {
+    const initializeMode = async () => {
       try {
-        if (mode === 'selfie') {
+        if (mode.type === 'selfie') {
           await startCamera()
         } else {
           await startScanner()
         }
       } catch (err) {
-        console.error("Failed to initialize mode:", err)
+        console.error("Initialization error:", err)
       }
     }
 
-    init()
+    initializeMode()
 
     return () => {
-      cleanupAll()
+      stopCamera()
+      stopScanner()
     }
-  }, [isOpen, mode, cameraFacingMode])
+  }, [isOpen, mode.type, mode.cameraFacing])
 
-  const handleModeChange = async (newMode: 'selfie' | 'qr') => {
-    if (mode === newMode) return
-    setMode(newMode)
-  }
-
-  return (
+   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent 
-        className="sm:max-w-md bg-[#2a2a2a] border-[#444444] text-white"
-        aria-describedby="dialog-description">
-        
+      <DialogContent className="sm:max-w-[425px] bg-[#2a2a2a] border-[#444] text-white">
         <DialogHeader>
-          <DialogTitle className="text-white">
+          <DialogTitle className="text-white text-center">
             {type === 'masuk' ? 'Absen Masuk' : 'Absen Pulang'} - {userName}
           </DialogTitle>
-          <p id="dialog-description" className="sr-only">
-            {mode === 'selfie' ? 'Ambil foto untuk absensi' : 'Scan QR code untuk absensi'}
-          </p>
         </DialogHeader>
 
         {/* Mode Selector */}
         <div className="flex justify-center gap-4 mb-4">
           <Button
-            variant={mode === 'selfie' ? 'default' : 'outline'}
+            variant={mode.type === 'selfie' ? 'default' : 'outline'}
             onClick={() => handleModeChange('selfie')}
             className={`flex items-center gap-2 ${
-              mode === 'selfie' 
+              mode.type === 'selfie' 
                 ? 'bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white' 
                 : 'bg-transparent hover:bg-[#3a3a3a] text-gray-300 border-gray-600'
             }`}
@@ -239,10 +205,10 @@ export default function AttendanceModal({
             Selfie
           </Button>
           <Button
-            variant={mode === 'qr' ? 'default' : 'outline'}
+            variant={mode.type === 'qr' ? 'default' : 'outline'}
             onClick={() => handleModeChange('qr')}
             className={`flex items-center gap-2 ${
-              mode === 'qr' 
+              mode.type === 'qr' 
                 ? 'bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white' 
                 : 'bg-transparent hover:bg-[#3a3a3a] text-gray-300 border-gray-600'
             }`}
@@ -253,22 +219,22 @@ export default function AttendanceModal({
         </div>
 
         <div className="space-y-4">
-          <div>
+          <div className="text-center">
             <p className="text-gray-400">Waktu Saat Ini</p>
             <p className="text-2xl font-bold text-white">{attendanceTime}</p>
           </div>
 
           {/* Kamera/Scanner */}
           <div className="space-y-2">
-            <p className="text-gray-400">
-              {mode === 'selfie' 
+            <p className="text-gray-400 text-center">
+              {mode.type === 'selfie' 
                 ? (type === 'masuk' ? 'Ambil Foto Masuk' : 'Ambil Foto Pulang') 
                 : 'Scan QR Code'} (Wajib)
             </p>
             
-            <div className="relative bg-[#333333] rounded-lg aspect-[4/3] overflow-hidden">
-              {!photo ? (
-                mode === 'selfie' ? (
+            <div className="relative bg-[#333] rounded-lg aspect-[4/3] overflow-hidden border border-[#444]">
+              {!mode.photo ? (
+                mode.type === 'selfie' ? (
                   <div className="relative w-full h-full">
                     <video 
                       ref={videoRef} 
@@ -281,14 +247,14 @@ export default function AttendanceModal({
                       {isMobile && (
                         <button
                           onClick={switchCamera}
-                          className="bg-gray-600 hover:bg-gray-700 text-white p-2 rounded-full"
+                          className="bg-gray-600 hover:bg-gray-700 text-white p-2 rounded-full shadow-md"
                         >
                           <RotateCw className="h-6 w-6" />
                         </button>
                       )}
                       <button
                         onClick={takePhoto}
-                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
+                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-md"
                       >
                         <Camera className="h-6 w-6" />
                       </button>
@@ -309,7 +275,7 @@ export default function AttendanceModal({
               ) : (
                 <div className="relative w-full h-full">
                   <Image
-                    src={photo}
+                    src={mode.photo}
                     alt={`Foto ${type === 'masuk' ? 'masuk' : 'pulang'}`}
                     fill
                     className="object-cover"
@@ -318,7 +284,7 @@ export default function AttendanceModal({
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
                     <button
                       onClick={retakePhoto}
-                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full"
+                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-md"
                     >
                       <RotateCw className="h-6 w-6" />
                     </button>
@@ -330,12 +296,16 @@ export default function AttendanceModal({
 
           {/* Tombol Aksi */}
           <div className="flex justify-end gap-3 pt-4">
-            <Button variant="outline" onClick={handleClose} className="bg-[#333333] border-[#444444] text-white hover:bg-[#444444]">
+            <Button 
+              variant="outline" 
+              onClick={handleClose}
+              className="bg-[#333] border-[#444] text-white hover:bg-[#444]"
+            >
               Batal
             </Button>
             <Button 
               onClick={onSubmit} 
-              disabled={!photo && mode === 'selfie'}
+              disabled={!mode.photo && mode.type === 'selfie'}
               className={type === 'masuk' 
                 ? 'bg-green-600 hover:bg-green-700 text-white' 
                 : 'bg-blue-600 hover:bg-blue-700 text-white'}

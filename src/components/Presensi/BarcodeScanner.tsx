@@ -1,18 +1,24 @@
 'use client'
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Barcode } from 'lucide-react';
 
 interface BarcodeScannerProps {
   onScan: (barcode: string) => void;
-videoRef: React.RefObject<HTMLVideoElement>;
+  videoRef: React.RefObject<HTMLVideoElement>;
 }
 
+export default function BarcodeScanner({ onScan, videoRef }: BarcodeScannerProps) {
+  useEffect(() => {
+    return () => {
+      if (videoRef.current?.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [videoRef]);
 
-export default function BarcodeScanner({ onScan }: BarcodeScannerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  
-    const handleMockScan = () => {
+  const handleMockScan = () => {
     const mockBarcode = `EMP-${Date.now()}`;
     onScan(mockBarcode);
   };
